@@ -9,6 +9,8 @@
           <el-checkbox label="最新版" name="last_softName"></el-checkbox>
           <el-checkbox label="破解版" name="last_softName"></el-checkbox>
           <el-checkbox label="2022" name="last_softName"></el-checkbox>
+          <el-checkbox label="内置修改器" name="last_softName"></el-checkbox>
+          <el-checkbox label="内置菜单" name="last_softName"></el-checkbox>
         </el-checkbox-group>
         <el-input v-model="form.cus_last_softName" placeholder="自定义软件全名(包含长尾词)"></el-input>
 
@@ -208,7 +210,7 @@ export default {
    },
   //  点击生成
    create() {
-    console.log(this.selectMsg);
+   
     this.textarea = `(function (soft_name, name_longlast, seo_Title, key_words, tags,select_id, select_text) {
                 let softName = document.querySelector("input[name='Name']")
                 let seoTitle = document.querySelector("input[name='SeoTitle']")
@@ -230,9 +232,8 @@ export default {
                 // 标签
                 aTag[0].value = soft_name
                 tags.forEach((item,index)=> {
-                    if(index!==0) {
-                        aTag[index].value = tags[index-1]
-                    }
+                        aTag[index+1].value = tags[index]
+                    
                     
                 })
 
@@ -254,19 +255,21 @@ export default {
       //   arr = cus_last_softName.join("");
 
       // }
-      return this.form.softName + this.form.last_softName;
+      let tmp_last_softName = this.form.last_softName
+      if(this.form.cus_last_softName!=="") {
+        tmp_last_softName = this.form.cus_last_softName.split('-')
+      }
+      return this.form.softName + tmp_last_softName.join('');
     },
     getSeoTitle() {
       let seoTitle = this.form.cus_title == "" ? this.form.title : this.form.cus_title;
-      if (seoTitle instanceof Array) {
-        let arr = this.form.last_softName.concat(seoTitle)
-        seoTitle = Array.from(new Set(arr)).join('')
-      }else {
-        // 自定义时各个种类用-分割
-        seoTitle= seoTitle.split('-')
-        let arr = this.form.last_softName.concat(seoTitle)
-        seoTitle = Array.from(new Set(arr)).join('')
+      if (!seoTitle instanceof Array) {
+          // 自定义时各个种类用-分割
+          seoTitle= seoTitle.split('-')
       }
+      
+      let arr = this.form.last_softName.concat(seoTitle)
+      seoTitle = Array.from(new Set(arr)).join('')
       return this.getSoftName + "-" +this.form.softName+this.form.cus_last_softName+seoTitle + "下载";
     },
     getKeyWord() {
